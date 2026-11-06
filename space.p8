@@ -42,6 +42,29 @@ function update_ship()
 
     ship.x += ship.vx
     ship.y += ship.vy
+
+    -- invisible world borders
+
+    if ship.x < 4 then
+        ship.x = 4
+        ship.vx = 0
+    end
+
+    if ship.x > 123 then
+        ship.x = 123
+        ship.vx = 0
+    end
+
+    if ship.y < 4 then
+        ship.y = 4
+        ship.vy = 0
+    end
+
+    if ship.y > 123 then
+        ship.y = 123
+        ship.vy = 0
+    end
+
 end
 -->8
 function update_debris_system()
