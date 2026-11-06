@@ -268,11 +268,11 @@ function check_ship_collision()
 
     for d in all(debris) do
 
-        if abs(ship.x - d.x) < 6
-        and abs(ship.y - d.y) < 6 then
+        local dx = ship.x + 4 - d.x
+        local dy = ship.y + 4 - d.y
 
+        if dx*dx + dy*dy < 14 then
             game_over = true
-
         end
 
     end
