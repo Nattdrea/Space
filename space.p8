@@ -107,6 +107,59 @@ function update_debris_system()
     for d in all(debris) do
         update_debris(d)
     end
+
+    check_debris_collisions()
+end
+
+-- large debris bounce or split on contact
+function check_debris_collisions()
+    for i=1,#debris-1 do
+        for j=i+1,#debris do
+            local a=debris[i]
+            local b=debris[j]
+            local dx=b.x-a.x
+            local dy=b.y-a.y
+            local dist2=dx*dx+dy*dy
+
+            -- each large debris has radius 3
+            if dist2<36 then
+                -- 50% chance both pieces split
+                if rnd(1)<0.5 then
+                    -- one breaks north/south,
+                    -- the other east/west
+                    split_debris(a,"vertical")
+                    split_debris(b,"horizontal")
+                    -- the list changed, so finish
+                    -- checking pairs next frame
+                    return
+                end
+
+                local dist=sqrt(dist2)
+                local nx=1
+                local ny=0
+                if dist>0 then
+                    nx=dx/dist
+                    ny=dy/dist
+                end
+
+                -- push circles out of overlap
+                local overlap=(6-dist)/2+0.01
+                a.x-=nx*overlap
+                a.y-=ny*overlap
+                b.x+=nx*overlap
+                b.y+=ny*overlap
+
+                -- bounce away along collision line
+                local closing=(a.dx-b.dx)*nx
+                    +(a.dy-b.dy)*ny
+                local push=max(0.3,closing)
+                a.dx-=nx*push
+                a.dy-=ny*push
+                b.dx+=nx*push
+                b.dy+=ny*push
+            end
+        end
+    end
 end
 
 function update_small_debris()
@@ -349,19 +402,24 @@ function check_ship_collision()
 
 end
 -->8
-function split_debris(d)
-    local speed=abs(d.dx+d.dy)
+function split_debris(d,axis)
+    local speed=max(0.5,sqrt(d.dx*d.dx+d.dy*d.dy)*1.5)
 
-    if d.dx != 0 then
-        add(small_debris,{x=d.x,y=d.y,dx=0,dy=speed})
-        add(small_debris,{x=d.x,y=d.y,dx=0,dy=-speed})
+    -- when two large debris collide, the first
+    -- splits north/south and the second east/west.
+    -- bullets still use the original auto direction.
+    if axis=="vertical" or
+      (axis==nil and abs(d.dx)>abs(d.dy)) then
+        add(small_debris,{x=d.x,y=d.y-2,dx=0,dy=-speed})
+        add(small_debris,{x=d.x,y=d.y+2,dx=0,dy=speed})
     else
-        add(small_debris,{x=d.x,y=d.y,dx=speed,dy=0})
-        add(small_debris,{x=d.x,y=d.y,dx=-speed,dy=0})
+        add(small_debris,{x=d.x-2,y=d.y,dx=-speed,dy=0})
+        add(small_debris,{x=d.x+2,y=d.y,dx=speed,dy=0})
     end
 
     del(debris,d)
 end
+
 __gfx__
 00000000000000000000000000000000000990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000770000007700000077000007887000007700000077000000000000000000000000000000000000000000000000000000000000000000000000000
