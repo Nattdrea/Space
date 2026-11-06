@@ -2,4 +2,5 @@
 
 Hello!
 
--Frederik was here
+- Frederik was here
+- And so was Lucas :D
