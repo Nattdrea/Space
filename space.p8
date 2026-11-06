@@ -9,7 +9,7 @@ ship = {
     vy=0,
 
     accel=0.15,
-    drag=0.98,
+    drag=0.90,
     max_speed=2
 }
 
