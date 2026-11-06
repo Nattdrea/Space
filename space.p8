@@ -22,6 +22,7 @@ ship = {
 function _init()
     debris = {}
     bullets = {}
+    game_over = false
 end
 -->8
 function update_ship()
@@ -165,9 +166,13 @@ end
 -->8
 function _update()
 
+if game_over then
+return 
+end
     update_ship()
     update_debris_system()
     update_bullets()
+    check_ship_collision()
 
 end
 -->8
@@ -198,6 +203,12 @@ function _draw()
     draw_ship()
     draw_debris()
     draw_bullets()
+    
+    if game_over then
+       rectfill (20,50,108,78,0)
+       rect(20,50,108,78,8)
+       print("game over",44,62,8)
+       end
 
 end
 -->8
@@ -249,6 +260,21 @@ function draw_bullets()
 
     for b in all(bullets) do
         circfill(b.x,b.y,1,10)
+    end
+
+end
+-->8
+function check_ship_collision()
+
+    for d in all(debris) do
+
+        if abs(ship.x - d.x) < 6
+        and abs(ship.y - d.y) < 6 then
+
+            game_over = true
+
+        end
+
     end
 
 end
@@ -390,4 +416,3 @@ __label__
 82888828828282888888888288288882888888888888888888888888888888888888888888888888888888888882888288828828828288288882828888888888
 82228222828282228888822282888882888888888888888888888888888888888888888888888888888888888882822288828288822282228882822288822288
 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
-
