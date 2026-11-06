@@ -23,6 +23,8 @@ function _init()
     debris = {}
     bullets = {}
     game_over = false
+    fire_rate = 30 --Parameter. Can change anytime we want.
+    fire_timer = 0
 end
 -->8
 function update_ship()
@@ -266,8 +268,13 @@ end
 
 function update_bullets()
 
-    if btnp(4) then
+    if fire_timer > 0 then
+        fire_timer -= 1
+    end
+
+    if btn(4) and fire_timer <= 0 then
         shoot()
+        fire_timer = fire_rate
     end
 
     for b in all(bullets) do
