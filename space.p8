@@ -169,9 +169,18 @@ function update_bullets()
         b.y += b.dy
         if b.y < 0 then
             del(bullets,b)
+        else
+            for d in all(debris) do
+                if abs(b.x-d.x)<3 and abs(b.y-d.y)<3 then
+                    del(bullets,b)
+                    del(debris,d)
+                    break
+                end
+            end
         end
     end
 end
+
 
 function draw_bullets()
     for b in all(bullets) do
