@@ -308,6 +308,9 @@ function draw_bullets()
     end
 
 end-->8
+
+ 
+-->8
 function check_ship_collision()
 
     for d in all(debris) do
@@ -315,7 +318,7 @@ function check_ship_collision()
         local dx = ship.x + 4 - d.x
         local dy = ship.y + 4 - d.y
 
-        if dx*dx + dy*dy < 14 then
+        if dx*dx + dy*dy < 20 then
             game_over = true
         end
 
