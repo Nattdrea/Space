@@ -26,26 +26,31 @@ end
 -->8
 function update_ship()
 
+    -- up
     if btn(2) then
         ship.vy -= ship.accel
         ship.sp = 2
     end
 
+    -- down
     if btn(3) then
         ship.vy += ship.accel
         ship.sp = 4
     end
 
+    -- left
     if btn(0) then
         ship.vx -= ship.accel
         ship.sp = 5
     end
 
+    -- right
     if btn(1) then
         ship.vx += ship.accel
         ship.sp = 3
     end
 
+    -- speed limit
     ship.vx = mid(
         -ship.max_speed,
         ship.vx,
@@ -58,29 +63,32 @@ function update_ship()
         ship.max_speed
     )
 
+    -- drag
     ship.vx *= ship.drag
     ship.vy *= ship.drag
 
+    -- movement
     ship.x += ship.vx
     ship.y += ship.vy
 
-    if ship.x < 4 then
-        ship.x = 4
+    -- sprite-sized world borders
+    if ship.x < 0 then
+        ship.x = 0
         ship.vx = 0
     end
 
-    if ship.x > 123 then
-        ship.x = 123
+    if ship.x > 120 then
+        ship.x = 120
         ship.vx = 0
     end
 
-    if ship.y < 4 then
-        ship.y = 4
+    if ship.y < 0 then
+        ship.y = 0
         ship.vy = 0
     end
 
-    if ship.y > 123 then
-        ship.y = 123
+    if ship.y > 120 then
+        ship.y = 120
         ship.vy = 0
     end
 
@@ -382,3 +390,4 @@ __label__
 82888828828282888888888288288882888888888888888888888888888888888888888888888888888888888882888288828828828288288882828888888888
 82228222828282228888822282888882888888888888888888888888888888888888888888888888888888888882822288828288822282228882822288822288
 88888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+
