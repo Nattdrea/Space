@@ -9,7 +9,7 @@ ship = {
     vy=0,
 
     accel=0.15,
-    drag=0.90,
+    drag=0.98,
     max_speed=2
 }
 
@@ -17,6 +17,7 @@ ship = {
 -->8
 function _init()
     debris = {}
+    bullets = {}
 end
 -->8
 function update_ship()
@@ -151,10 +152,47 @@ function draw_debris()
 
 end
 -->8
+function shoot()
+    add(bullets, {
+        x=ship.x,
+        y=ship.y-5,
+        dy=-4
+    })
+end
+
+function update_bullets()
+    if btnp(4) then
+        shoot()
+    end
+
+    for b in all(bullets) do
+        b.y += b.dy
+        if b.y < 0 then
+            del(bullets,b)
+        else
+            for d in all(debris) do
+                if abs(b.x-d.x)<3 and abs(b.y-d.y)<3 then
+                    del(bullets,b)
+                    del(debris,d)
+                    break
+                end
+            end
+        end
+    end
+end
+
+
+function draw_bullets()
+    for b in all(bullets) do
+        circfill(b.x,b.y,1,10)
+    end
+end
+-->8
 function _update()
 
     update_ship()
     update_debris_system()
+    update_bullets()
 
 end
 -->8
@@ -170,6 +208,7 @@ function _draw()
 
     draw_ship()
     draw_debris()
+    draw_bullets()
 
 end
 __gfx__
