@@ -213,11 +213,55 @@ function _draw()
 end
 -->8
 function shoot()
+ if ship.sp == 2 then
+  shootup()
+ end
+ if ship.sp == 4 then
+	 shootdown()
+	end
+	if ship.sp == 3 then
+	 shootright()
+	end
+	if ship.sp == 5 then
+	 shootleft()
+	end
+end
+
+--directions shooting--
+function shootup()
     add(bullets,{
         x=ship.x+4,
         y=ship.y+4,
+        dx=0,
         dy=-4
     })
+end
+
+function shootdown()
+				add(bullets,{
+								x=ship.x+4,
+								y=ship.y+4,
+								dx=0,
+								dy=4
+				})
+end
+
+function shootright()
+				add(bullets,{
+								x=ship.x+4,
+								y=ship.y+4,
+								dx=4,
+								dy=0
+				})
+end
+
+function shootleft()
+				add(bullets,{
+								x=ship.x+4,
+								y=ship.y+4,
+								dx=-4,
+								dy=0
+				})
 end
 
 function update_bullets()
@@ -229,6 +273,7 @@ function update_bullets()
     for b in all(bullets) do
 
         b.y += b.dy
+        b.x += b.dx
 
         if b.y < 0 then
 
@@ -262,8 +307,7 @@ function draw_bullets()
         circfill(b.x,b.y,1,10)
     end
 
-end
--->8
+end-->8
 function check_ship_collision()
 
     for d in all(debris) do
