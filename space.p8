@@ -162,17 +162,28 @@ function check_debris_collisions()
     end
 end
 
-function update_small_debris()
-    for d in all(small_debris) do
-        d.x += d.dx
-        d.y += d.dy
+function check_small_large_debris_collision()
 
-        if d.x < 0 or d.x > 127
-        or d.y < 0 or d.y > 127 then
-            del(small_debris,d)
+    for big in all(debris) do
+        for small in all(small_debris) do
+
+            local dx = small.x - big.x
+            local dy = small.y - big.y
+
+            if dx*dx + dy*dy < 16 then
+
+                del(small_debris,small)
+
+                if rnd(1) < 2/3 then
+                    split_debris(big)
+                    return
+                end
+            end
         end
     end
 end
+
+
 -->8
 function spawn_debris()
 
@@ -217,6 +228,18 @@ function update_debris(d)
         del(debris,d)
     end
 end
+
+function update_small_debris()
+    for d in all(small_debris) do
+        d.x += d.dx
+        d.y += d.dy
+
+        if d.x < 0 or d.x > 127
+        or d.y < 0 or d.y > 127 then
+            del(small_debris,d)
+        end
+    end
+end
 -->8
 
 function draw_debris()
@@ -236,13 +259,16 @@ end
 function _update()
 
 if game_over then
-return 
+				return 
 end
     update_ship()
     update_debris_system()
     update_small_debris()
     update_bullets()
+    
     check_ship_collision()
+    check_small_debris_ship_collision()
+    check_small_large_debris_collision()
 
 end
 -->8
@@ -356,25 +382,37 @@ function update_bullets()
             del(bullets,b)
 
         else
-
+        				local hit = false
+												
             for d in all(debris) do
 
-                if abs(b.x-d.x)<3
-                and abs(b.y-d.y)<3 then
+    											if abs(b.x-d.x)<3
+    											and abs(b.y-d.y)<3 then
 
-                    del(bullets,b)
-                    split_debris(d)
+        										del(bullets,b)
+        										split_debris(d)
+        									 
+        									 hit = true
+        										break
+    											end
+												end
+												
+												if not hit then
+												
+												   for d in all(small_debris) do
 
-                    break
+    											   if abs(b.x-d.x)<2
+    											   and abs(b.y-d.y)<2 then
 
-                end
+        										   del(bullets,b)
+        										   del(small_debris,d)
 
-            end
-
+        										   break
+    											   end
+												   end
+												end  
         end
-
     end
-
 end
 
 function draw_bullets()
@@ -395,11 +433,27 @@ function check_ship_collision()
         local dy = ship.y + 4 - d.y
 
         if dx*dx + dy*dy < 20 then
-            game_over = true
+            damage_ship(1)
         end
-
     end
+end
 
+function check_small_debris_ship_collision()
+
+    for d in all(small_debris) do
+
+        local dx = ship.x + 4 - d.x
+        local dy = ship.y + 4 - d.y
+
+        if dx*dx + dy*dy < 16 then
+            damage_ship(1)
+        end
+    end
+end
+
+function damage_ship(amount)
+    -- temporary
+    game_over = true
 end
 -->8
 function split_debris(d,axis)
