@@ -27,6 +27,7 @@ function _init()
     fire_rate = 30 --Parameter. Can change anytime we want.
     fire_timer = 0
     damage_cooldown = 0
+    debris_shot_count = 0
 
 
     -- Energy.
@@ -348,8 +349,12 @@ end
 function _draw()
 
     cls(0)
-
-    -- stars
+    
+  if not game_over then
+        print("debris shot: "..debris_shot_count, 2, 2, 7)
+    end
+    
+     -- stars
     pset(10,20,7)
     pset(40,90,6)
     pset(90,30,7)
@@ -366,8 +371,12 @@ function _draw()
     rectfill(15,45,113,83,0)
     rect(15,45,113,83,8)
 
+			 print("debris shot: "..debris_shot_count,
+        64-#("debris shot: "..debris_shot_count)*2,
+        60, 7)
     print("game over", 64-#("game over")*2, 53, 8)
     print("press x to restart", 64-#("press x to restart")*2, 68, 11)
+
 
 end
 
@@ -456,6 +465,8 @@ function update_bullets()
 
         										del(bullets,b)
         										split_debris(d)
+        										
+        										debris_shot_count += 1
         									 
         									 hit = true
         										break
@@ -569,6 +580,9 @@ function restart_game()
 
     -- reset energy
     energy = max_energy
+    
+    -- reset counter
+    debris_shot_count = 0
 
     -- reset timers
     fire_timer = 0
