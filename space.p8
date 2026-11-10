@@ -275,19 +275,25 @@ end
 -->8
 function _update()
 
-if game_over then
-				return 
-end
+    -- game over controls
+    if game_over then
 
-if damage_cooldown > 0 then
-    damage_cooldown -= 1
-end
+        if btnp(5) then
+            restart_game()
+        end
+
+        return
+    end
+
+    if damage_cooldown > 0 then
+        damage_cooldown -= 1
+    end
 
     update_ship()
     update_debris_system()
     update_small_debris()
     update_bullets()
-    
+
     check_ship_collision()
     check_small_debris_ship_collision()
     check_small_large_debris_collision()
@@ -356,10 +362,14 @@ function _draw()
     draw_energy_bar()
     
     if game_over then
-       rectfill (20,50,108,78,0)
-       rect(20,50,108,78,8)
-       print("game over",44,62,8)
-       end
+
+    rectfill(15,45,113,83,0)
+    rect(15,45,113,83,8)
+
+    print("game over", 64-#("game over")*2, 53, 8)
+    print("press x to restart", 64-#("press x to restart")*2, 68, 11)
+
+end
 
 end
 -->8
@@ -542,6 +552,32 @@ function split_debris(d,axis)
     del(debris,d)
 end
 
+-->8
+function restart_game()
+
+    -- reset ship
+    ship.x = 64
+    ship.y = 64
+    ship.vx = 0
+    ship.vy = 0
+    ship.sp = 1
+
+    -- clear objects
+    debris = {}
+    small_debris = {}
+    bullets = {}
+
+    -- reset energy
+    energy = max_energy
+
+    -- reset timers
+    fire_timer = 0
+    damage_cooldown = 0
+
+    -- restart game
+    game_over = false
+
+end
 __gfx__
 00000000000000000000000000000000000990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000770000007700000077000007887000007700000077000000000000000000000000000000000000000000000000000000000000000000000000000
