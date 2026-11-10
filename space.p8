@@ -28,6 +28,7 @@ function _init()
     fire_timer = 0
     damage_cooldown = 0
     debris_shot_count = 0
+    pickups={}
 
 
     -- Energy.
@@ -294,6 +295,7 @@ function _update()
     update_debris_system()
     update_small_debris()
     update_bullets()
+    update_pickups()
 
     check_ship_collision()
     check_small_debris_ship_collision()
@@ -365,6 +367,7 @@ function _draw()
     draw_small_debris()
     draw_bullets()
     draw_energy_bar()
+    draw_pickups()
     
     if game_over then
 
@@ -482,17 +485,35 @@ function update_bullets()
 
         										   del(bullets,b)
         										   del(small_debris,d)
-
-                                                   energy = min(
-                                                   max_energy,
-                                                   energy + energy_gain)
-
+        										   add(pickups,{
+																							 x=d.x-4,
+																							 y=d.y-4,
+ 																							spr=7
+																								})
+																								
         										   break
     											   end
 												  end
 												end  
         end
     end
+end
+
+function draw_pickups()
+ for p in all(pickups) do
+  spr(p.spr,p.x,p.y)
+ end
+end
+
+function update_pickups()
+ for p in all(pickups) do
+  if abs(ship.x-p.x)<4
+  and abs(ship.y-p.y)<4 then
+   del(pickups,p)
+		 energy = min(max_energy,energy + energy_gain)
+
+  end
+ end
 end
 
 function draw_bullets()
@@ -513,7 +534,7 @@ function check_ship_collision()
         local dy = ship.y + 4 - d.y
 
         if dx*dx + dy*dy < 20 then
-            damage_ship(1)
+            damage_ship(50)
         end
     end
 end
@@ -526,7 +547,7 @@ function check_small_debris_ship_collision()
         local dy = ship.y + 4 - d.y
 
         if dx*dx + dy*dy < 16 then
-            damage_ship(1)
+            damage_ship(25)
         end
     end
 end
@@ -536,7 +557,7 @@ function damage_ship(amount)
         return
     end
 
-    energy = max(0, energy - 50)
+    energy = max(0, energy - amount)
 
     damage_cooldown = 30
 
@@ -595,10 +616,10 @@ end
 __gfx__
 00000000000000000000000000000000000990000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000770000007700000077000007887000007700000077000000000000000000000000000000000000000000000000000000000000000000000000000
-00700700007667000076670007766700007667000076677000766700000000000000000000000000000000000000000000000000000000000000000000000000
-000770000767c6700767c6709867c6700767c6700767c6890767c670000000000000000000000000000000000000000000000000000000000000000000000000
-00077000076c1670076c1670986c1670076c1670076c1689076c1670000000000000000000000000000000000000000000000000000000000000000000000000
-00700700007667000076670007766700007667000076677000766700000000000000000000000000000000000000000000000000000000000000000000000000
+00700700007667000076670007766700007667000076677000766700000550000000000000000000000000000000000000000000000000000000000000000000
+000770000767c6700767c6709867c6700767c6700767c6890767c670005bb5000000000000000000000000000000000000000000000000000000000000000000
+00077000076c1670076c1670986c1670076c1670076c1689076c1670005bb5000000000000000000000000000000000000000000000000000000000000000000
+00700700007667000076670007766700007667000076677000766700000550000000000000000000000000000000000000000000000000000000000000000000
 00000000007887000078870000077000000770000007700000788700000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000009900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __label__
