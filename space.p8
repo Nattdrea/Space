@@ -290,6 +290,10 @@ function _update()
         damage_cooldown -= 1
     end
 
+ if energy <= 0 then
+        game_over = true
+ end
+
     update_ship()
     update_debris_system()
     update_small_debris()
@@ -540,9 +544,7 @@ function damage_ship(amount)
 
     damage_cooldown = 30
 
-    if energy <= 0 then
-        game_over = true
-    end
+ 
 end
 -->8
 function split_debris(d,axis)
