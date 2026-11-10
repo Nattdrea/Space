@@ -26,32 +26,45 @@ function _init()
     game_over = false
     fire_rate = 30 --Parameter. Can change anytime we want.
     fire_timer = 0
+    damage_cooldown = 0
+
+
+    -- Energy.
+    max_energy = 100
+    energy = max_energy
+    energy_drain = 5
+    energy_gain = 15
 end
 -->8
 function update_ship()
+    local moving = false
 
     -- up
     if btn(2) then
         ship.vy -= ship.accel
         ship.sp = 2
+        moving = true
     end
 
     -- down
     if btn(3) then
         ship.vy += ship.accel
         ship.sp = 4
+        moving = true
     end
 
     -- left
     if btn(0) then
         ship.vx -= ship.accel
         ship.sp = 5
+        moving = true
     end
 
     -- right
     if btn(1) then
         ship.vx += ship.accel
         ship.sp = 3
+        moving = true
     end
 
     -- speed limit
@@ -96,6 +109,10 @@ function update_ship()
         ship.vy = 0
     end
 
+     if moving then
+
+        energy = max(0, energy - energy_drain/30)
+    end
 end
 -->8
 function update_debris_system()
@@ -261,6 +278,11 @@ function _update()
 if game_over then
 				return 
 end
+
+if damage_cooldown > 0 then
+    damage_cooldown -= 1
+end
+
     update_ship()
     update_debris_system()
     update_small_debris()
@@ -286,6 +308,37 @@ function draw_ship()
 
 end
 
+function draw_energy_bar()
+
+    local bar_w = 60
+    local bar_h = 5
+
+    local x = 34
+    local y = 120
+
+    -- border
+    rect(
+        x-1,
+        y-1,
+        x+bar_w,
+        y+bar_h,
+        7
+    )
+
+    -- fill
+    local fill_w =
+        (energy/max_energy) * bar_w
+
+    rectfill(
+        x,
+        y,
+        x+fill_w,
+        y+bar_h-1,
+        11
+    )
+
+end
+
 function _draw()
 
     cls(0)
@@ -300,6 +353,7 @@ function _draw()
     draw_debris()
     draw_small_debris()
     draw_bullets()
+    draw_energy_bar()
     
     if game_over then
        rectfill (20,50,108,78,0)
@@ -369,6 +423,7 @@ function update_bullets()
 
     if btn(4) and fire_timer <= 0 then
         shoot()
+        energy = max(0, energy - energy_drain)
         fire_timer = fire_rate
     end
 
@@ -407,9 +462,13 @@ function update_bullets()
         										   del(bullets,b)
         										   del(small_debris,d)
 
+                                                   energy = min(
+                                                   max_energy,
+                                                   energy + energy_gain)
+
         										   break
     											   end
-												   end
+												  end
 												end  
         end
     end
@@ -452,8 +511,17 @@ function check_small_debris_ship_collision()
 end
 
 function damage_ship(amount)
-    -- temporary
-    game_over = true
+      if damage_cooldown > 0 then
+        return
+    end
+
+    energy = max(0, energy - 50)
+
+    damage_cooldown = 30
+
+    if energy <= 0 then
+        game_over = true
+    end
 end
 -->8
 function split_debris(d,axis)
