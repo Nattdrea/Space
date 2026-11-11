@@ -24,6 +24,7 @@ function _init()
     small_debris = {}
     bullets = {}
     game_over = false
+    on_title = true
     fire_rate = 30 --Parameter. Can change anytime we want.
     fire_timer = 0
     damage_cooldown = 0
@@ -277,6 +278,15 @@ end
 -->8
 function _update()
 
+    -- wait for x before starting game
+    if on_title then
+        if btnp(5) then
+            restart_game()
+            on_title = false
+        end
+        return
+    end
+
     -- game over controls
     if game_over then
 
@@ -352,7 +362,90 @@ function draw_energy_bar()
 
 end
 
+function title_arrow(x,y,dir)
+    if dir=="left" then
+        line(x+1,y,x+8,y,7)
+        line(x+1,y,x+4,y-3,7)
+        line(x+1,y,x+4,y+3,7)
+    elseif dir=="right" then
+        line(x,y,x+7,y,7)
+        line(x+7,y,x+4,y-3,7)
+        line(x+7,y,x+4,y+3,7)
+    elseif dir=="up" then
+        line(x+4,y-3,x+4,y+4,7)
+        line(x+4,y-3,x+1,y,7)
+        line(x+4,y-3,x+7,y,7)
+    elseif dir=="down" then
+        line(x+4,y-3,x+4,y+4,7)
+        line(x+4,y+4,x+1,y+1,7)
+        line(x+4,y+4,x+7,y+1,7)
+    end
+end
+
+
+function draw_space_title()
+    local letters={
+        {"01111","10000","10000","01110","00001","00001","11110"}, -- s
+        {"11110","10001","10001","11110","10000","10000","10000"}, -- p
+        {"01110","10001","10001","11111","10001","10001","10001"}, -- a
+        {"01111","10000","10000","10000","10000","10000","01111"}, -- c
+        {"11111","10000","10000","11110","10000","10000","11111"}  -- e
+    }
+    local scale=3
+    local start_x=20
+    local start_y=12
+    for i=1,5 do
+        local glyph=letters[i]
+        local gx=start_x+(i-1)*18
+        for row=1,7 do
+            for col=1,5 do
+                if sub(glyph[row],col,col)=="1" then
+                    local x=gx+(col-1)*scale
+                    local y=start_y+(row-1)*scale
+                    rectfill(x+2,y+2,x+scale+1,y+scale+1,1)
+                    rectfill(x,y,x+scale-1,y+scale-1,7)
+                end
+            end
+        end
+    end
+end
+
+function draw_title_screen()
+    cls(0)
+
+    for i=1,30 do
+        local x=(i*47+13)%128
+        local y=(i*31+7)%128
+        pset(x,y, i%3==0 and 6 or 5)
+    end
+    --title
+    draw_space_title()
+    line(22,40,105,40,12)
+    spr(1,60,45)
+
+    print("press x to start",30,68,10)
+
+    -- controls
+    rectfill(66,75,127,127,1)
+    rect(66,75,127,127,5)
+    print("controls",81,77,12)
+    title_arrow(73,90,"left")
+    print("left",88,87,7)
+    title_arrow(73,99,"right")
+    print("right",88,96,7)
+    title_arrow(73,108,"up")
+    print("up",88,105,7)
+    title_arrow(73,117,"down")
+    print("down",88,114,7)
+    print("z: shoot",86,122,10)
+end
+
 function _draw()
+
+    if on_title then
+        draw_title_screen()
+        return
+    end
 
     cls(0)
     
