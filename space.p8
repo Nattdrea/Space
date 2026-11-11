@@ -582,6 +582,9 @@ function update_bullets()
 
         										   del(bullets,b)
         										   del(small_debris,d)
+
+                                                   debris_shot_count += 1
+
         										   add(pickups,{
 																							 x=d.x-4,
 																							 y=d.y-4,
