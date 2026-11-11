@@ -30,7 +30,11 @@ function _init()
     damage_cooldown = 0
     debris_shot_count = 0
     pickups={}
+    level = 1
+    total_debris_shot = 0
 
+    debris_spawn_chance = 0.02
+    debris_speed_bonus = 0
 
     -- Energy.
     max_energy = 100
@@ -120,8 +124,8 @@ end
 -->8
 function update_debris_system()
 
-    if #debris < 10 and rnd(1) < 0.02 then
-        spawn_debris()
+    if #debris < 10 and rnd(1) < debris_spawn_chance then
+       spawn_debris()
     end
 
     for d in all(debris) do
@@ -209,7 +213,7 @@ function spawn_debris()
 
     local d={}
     local side=flr(rnd(4))
-    local speed=0.1+rnd(0.3)
+    local speed=0.1+rnd(0.3)+debris_speed_bonus
 
     if side==0 then
         d.x=0
@@ -438,8 +442,8 @@ function draw_title_screen()
     title_arrow(73,117,"down")
     print("down",88,114,7)
     print("z: shoot",86,122,10)
-end
 
+end 
 function _draw()
 
     if on_title then
@@ -449,9 +453,13 @@ function _draw()
 
     cls(0)
     
-  if not game_over then
-        print("debris shot: "..debris_shot_count, 2, 2, 7)
-    end
+ if not game_over then
+
+    print("next level: "..(10-debris_shot_count), 2, 2, 7)
+
+    print("level: "..level, 2, 10, 11)
+
+end
     
      -- stars
     pset(10,20,7)
@@ -466,17 +474,26 @@ function _draw()
     draw_energy_bar()
     draw_pickups()
     
-    if game_over then
+   
+if game_over then
 
-    rectfill(15,45,113,83,0)
-    rect(15,45,113,83,8)
+    rectfill(15,40,113,88,0)
+    rect(15,40,113,88,8)
 
-			 print("debris shot: "..debris_shot_count,
-        64-#("debris shot: "..debris_shot_count)*2,
-        60, 7)
-    print("game over", 64-#("game over")*2, 53, 8)
-    print("press x to restart", 64-#("press x to restart")*2, 68, 11)
+    print("game over",
+        64-#("game over")*2, 46, 8)
 
+    print("final level: "..level,
+        64-#("final level: "..level)*2,
+        56, 7)
+
+    print("total debris: "..total_debris_shot,
+        64-#("total debris: "..total_debris_shot)*2,
+        66, 7)
+
+    print("press x to restart",
+        64-#("press x to restart")*2,
+        78, 11)
 
 end
 
@@ -566,7 +583,7 @@ function update_bullets()
         										del(bullets,b)
         										split_debris(d)
         										
-        										debris_shot_count += 1
+        										register_debris_shot()
         									 
         									 hit = true
         										break
@@ -582,8 +599,9 @@ function update_bullets()
 
         										   del(bullets,b)
         										   del(small_debris,d)
+                     
+                     register_debris_shot()
 
-                                                   debris_shot_count += 1
 
         										   add(pickups,{
 																							 x=d.x-4,
@@ -703,13 +721,42 @@ function restart_game()
     
     -- reset counter
     debris_shot_count = 0
+    level = 1
 
+    debris_spawn_chance = 0.02
+    debris_speed_bonus = 0
     -- reset timers
     fire_timer = 0
     damage_cooldown = 0
 
     -- restart game
     game_over = false
+
+end
+-->8
+function register_debris_shot()
+
+    debris_shot_count += 1
+    total_debris_shot += 1
+
+    if debris_shot_count >= 10 then
+
+        -- next level
+        level += 1
+        debris_shot_count = 0
+
+        -- restore half energy
+        energy = min(max_energy, energy + 50)
+
+        -- increase difficulty
+        debris_spawn_chance = min(
+            0.06,
+            debris_spawn_chance + 0.002
+        )
+
+        debris_speed_bonus += 0.03
+
+    end
 
 end
 __gfx__
