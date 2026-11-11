@@ -721,6 +721,7 @@ function restart_game()
     
     -- reset counter
     debris_shot_count = 0
+    total_debris_shot = 0
     level = 1
 
     debris_spawn_chance = 0.02
