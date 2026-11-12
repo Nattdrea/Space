@@ -427,7 +427,7 @@ function draw_title_screen()
     line(22,40,105,40,12)
     spr(1,60,45)
 
-    print("press x to start",30,68,10)
+    print("press x to start",33,68,10)
 
     -- controls (centered beneath the space title)
     rectfill(33,75,94,127,1)
@@ -570,9 +570,9 @@ function update_bullets()
         b.y += b.dy
         b.x += b.dx
 
-        if b.y < 0 then
-
-            del(bullets,b)
+        if b.x < 0 or b.x > 127
+								or b.y < 0 or b.y > 127 then
+    							del(bullets,b)
 
         else
         				local hit = false
